@@ -1,113 +1,101 @@
-﻿## 第一部分：基础操作评估（5 分）
+﻿# 第一部分：基础操作评估（5 分）
 
-### 任务 1：目录和文件管理
+本部分通过命令行与 NameNode Web UI 验证常见的 HDFS 操作流程，分为目录管理和批量操作两大任务。
 
-**任务描述**：使用 HDFS 命令行工具完成以下操作，并通过 NameNode Web UI 确认结果。
+## 任务 1：目录和文件管理
 
-#### 1.1 目录结构创建
+### 1.1 目录结构创建
+- **目标**：在 `/user/student/project/` 下创建 `input/`、`output/`、`temp/` 子目录。
+- **执行命令**：
+  ```bash
+  hdfs dfs -mkdir -p /user/student/project/input
+  hdfs dfs -mkdir -p /user/student/project/output
+  hdfs dfs -mkdir -p /user/student/project/temp
+  ```
+- **命令执行截图**：
+  ![命令执行 - 目录创建](image.png)
+- **Web UI 验证**：
+  ![Web UI - 目录结构](image-1.png)
 
-```bash
-# 要求：创建以下目录结构：
-# /user/student/project/
-# ├── input/
-# ├── output/
-# └── temp/
-```
+### 1.2 文件上传与查看
+- **目标**：上传本地 `test.txt` 至 `input/` 目录，并查看文件内容与属性。
+- **执行步骤**：
+  ```bash
+  # 创建包含 100 行内容的测试文件
+  seq 1 100 | sed 's/^/第&行示例数据/' > test.txt
 
-- 命令执行截图：
-![alt text](image.png)
+  # 上传到 HDFS
+  hdfs dfs -put -f test.txt /user/student/project/input/
 
-**Web UI 验证要求**：
-- 在 NameNode Web UI 中确认目录结构创建成功。
-![alt text](image-1.png)
+  # 查看头部与尾部内容
+  hdfs dfs -cat /user/student/project/input/test.txt | head -n 10
+  hdfs dfs -tail /user/student/project/input/test.txt
 
-#### 1.2 文件上传和管理
+  # 查看文件属性
+  hdfs dfs -stat "%n %b %o %y" /user/student/project/input/test.txt
+  ```
+- **命令执行截图**：
+  ![命令执行 - 文件上传](image-2.png)
+- **Web UI 验证**：
+  ![Web UI - 文件上传](image-3.png)
 
-```bash
-# 要求：
-# 1. 在本地创建一个测试文件 test.txt（包含至少 100 行数据）
-# 2. 上传至 /user/student/project/input/ 目录
-# 3. 查看文件内容的前 10 行和后 10 行
-# 4. 查看文件的详细属性信息
-```
+### 1.3 文件复制与权限管理
+- **目标**：复制文件至 `temp/` 目录并调整文件与目录权限。
+- **执行步骤**：
+  ```bash
+  hdfs dfs -cp /user/student/project/input/test.txt /user/student/project/temp/
+  hdfs dfs -chmod 644 /user/student/project/temp/test.txt
+  hdfs dfs -chmod 755 /user/student/project/temp
+  hdfs dfs -ls -R /user/student/project/temp
+  ```
+- **命令执行截图**：
+  ![命令执行 - 文件复制与权限](image-4.png)
+- **Web UI 验证**：
+  ![Web UI - 目录权限](image-5.png)
+  ![Web UI - 文件权限](image-6.png)
 
-- 命令执行截图：
-![alt text](image-2.png)
+## 任务 2：批量操作
 
-**Web UI 验证要求**：
-- 在 Web UI 中确认文件上传成功。
-![alt text](image-3.png)
+### 2.1 批量文件上传
+- **目标**：批量创建并上传 `file1.txt` 至 `file5.txt`。
+- **执行步骤**：
+  ```bash
+  for i in {1..5}; do echo "文件${i} 的示例内容" > file${i}.txt; done
+  hdfs dfs -put -f file*.txt /user/student/project/input/
+  hdfs dfs -ls /user/student/project/input/file*.txt
+  ```
+- **命令执行截图**：
+  ![命令执行 - 批量上传](image-7.png)
+- **Web UI 验证**：
+  ![Web UI - 批量上传](image-8.png)
 
-#### 1.3 文件操作和权限管理
+### 2.2 通配符操作
+- **目标**：利用通配符批量列出、复制并统计文件。
+- **执行步骤**：
+  ```bash
+  hdfs dfs -ls /user/student/project/input/*.txt
+  hdfs dfs -cp /user/student/project/input/file*.txt /user/student/project/temp/
+  hdfs dfs -count /user/student/project/input
+  ```
+- **命令执行截图**：
+  ![命令执行 - 通配符操作](image-9.png)
+- **Web UI 验证**：
+  ![Web UI - 通配符结果](image-10.png)
 
-```bash
-# 要求：
-# 1. 将 input 目录中的文件复制到 temp 目录
-# 2. 修改 temp 目录中文件的权限为 644
-# 3. 修改 temp 目录的权限为 755
-# 4. 验证权限设置是否正确
-```
-
-- 命令执行截图：
-![alt text](image-4.png)
-
-**Web UI 验证要求**：
-- 在 Web UI 中确认文件复制和权限设置成功。
-- 目录权限截图：![alt text](image-5.png)
-- 文件权限截图：![alt text](image-6.png)
-
-### 任务 2：批量操作
-
-**任务描述**：使用 HDFS 命令行工具完成批量文件操作。
-
-#### 2.1 批量文件上传
-
-```bash
-# 要求：
-# 1. 在本地创建 5 个不同的文件（file1.txt 至 file5.txt）
-# 2. 批量上传这些文件到 /user/student/project/input/
-# 3. 使用通配符验证所有文件都已上传成功
-```
-
-- 命令执行截图：
-![alt text](image-7.png)
-
-**Web UI 验证要求**：
-- 在 Web UI 中确认所有文件都已批量上传成功。
-![alt text](image-8.png)
-
-#### 2.2 通配符操作
-
-```bash
-# 要求：
-# 1. 使用通配符列出所有 .txt 文件
-# 2. 使用通配符复制所有以 "file" 开头的文件到 temp 目录
-# 3. 统计 input 目录中文件的总数
-```
-
-- 命令执行截图：
-![alt text](image-9.png)
-
-**Web UI 验证要求**：
-- 在 Web UI 中确认通配符操作结果正确。
-![alt text](image-10.png)
-
-#### 2.3 目录操作和清理
-
-```bash
-# 要求：
-# 1. 创建一个备份目录 /user/student/backup/
-# 2. 将整个 project 目录复制到 backup 目录
-# 3. 删除 temp 目录中的所有文件（保留目录）
-# 4. 验证操作结果
-```
-
-- 命令执行截图：
-![alt text](image-11.png)
-
-**Web UI 验证要求**：
-- 在 Web UI 中确认备份和清理操作成功。
-- 备份结果截图：![alt text](image-13.png)
-- temp 目录清理截图：![alt text](image-12.png)
+### 2.3 目录备份与清理
+- **目标**：备份 `project/` 目录至 `backup/`，并清空 `temp/` 下文件。
+- **执行步骤**：
+  ```bash
+  hdfs dfs -mkdir -p /user/student/backup
+  hdfs dfs -cp -p /user/student/project /user/student/backup/
+  hdfs dfs -rm -f /user/student/project/temp/*
+  hdfs dfs -ls -R /user/student/backup/project
+  hdfs dfs -ls /user/student/project/temp
+  ```
+- **命令执行截图**：
+  ![命令执行 - 目录备份与清理](image-11.png)
+- **Web UI 验证**：
+  ![Web UI - 备份结果](image-13.png)
+  ![Web UI - temp 目录清空](image-12.png)
 
 ---
