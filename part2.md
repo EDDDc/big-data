@@ -17,26 +17,26 @@
 #### Web UI 验证要求
 
 - 在 NameNode Web UI 中确认程序执行的主要操作结果（如文件上传、目录创建等）。
-1.连接管理
+- 1.连接管理
 ![alt text](image-14.png)
-2.文件上传
-    命令执行
+- 2.文件上传
+    - 命令执行
     ![alt text](image-15.png)
-    确认上传
+    - 确认上传
     ![alt text](image-16.png)
-3.文件下载
-    命令执行
+- 3.文件下载
+    - 命令执行
     ![alt text](image-17.png)
-4.文件删除
-    命令执行
+- 4.文件删除
+    - 命令执行
     ![alt text](image-18.png)
-    确认删除
+    - 确认删除
     ![alt text](image-19.png)
-5.目录遍历
-    命令执行
+- 5.目录遍历
+    - 命令执行
     ![alt text](image-20.png)
-6.目录统计
-    命令执行
+- 6.目录统计
+    - 命令执行
     ![alt text](image-21.png)
 
 ---
